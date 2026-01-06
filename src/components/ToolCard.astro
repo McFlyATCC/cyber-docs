@@ -1,0 +1,73 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  icon: string;
+  href?: string;
+  status: 'active' | 'coming-soon';
+  tags?: string[];
+}
+
+const { title, description, icon, href, status, tags = [] } = Astro.props;
+const isActive = status === 'active';
+---
+
+<a 
+  href={isActive ? href : undefined}
+  class:list={[
+    "group relative block p-6 rounded-xl border transition-all duration-300",
+    isActive 
+      ? "bg-sentinel-dark/50 border-gray-800 hover:border-sentinel-blue/50 hover:bg-sentinel-dark cursor-pointer" 
+      : "bg-sentinel-dark/30 border-gray-800/50 cursor-not-allowed opacity-60"
+  ]}
+>
+  <!-- Status badge -->
+  {!isActive && (
+    <span class="absolute top-4 right-4 text-xs font-medium px-2 py-1 rounded-full bg-gray-800 text-gray-400">
+      Coming Soon
+    </span>
+  )}
+  
+  <!-- Icon -->
+  <div class:list={[
+    "w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors",
+    isActive 
+      ? "bg-sentinel-blue/10 text-sentinel-blue group-hover:bg-sentinel-blue/20" 
+      : "bg-gray-800/50 text-gray-500"
+  ]}>
+    <Fragment set:html={icon} />
+  </div>
+  
+  <!-- Content -->
+  <h3 class:list={[
+    "font-display font-semibold text-lg mb-2 transition-colors",
+    isActive ? "text-white group-hover:text-sentinel-blue" : "text-gray-400"
+  ]}>
+    {title}
+  </h3>
+  
+  <p class="text-gray-400 text-sm leading-relaxed mb-4">
+    {description}
+  </p>
+  
+  <!-- Tags -->
+  {tags.length > 0 && (
+    <div class="flex flex-wrap gap-2">
+      {tags.map(tag => (
+        <span class="text-xs px-2 py-1 rounded bg-gray-800/50 text-gray-500">
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+  
+  <!-- Arrow indicator for active cards -->
+  {isActive && (
+    <div class="absolute bottom-6 right-6 text-gray-600 group-hover:text-sentinel-blue transition-all group-hover:translate-x-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14"></path>
+        <path d="m12 5 7 7-7 7"></path>
+      </svg>
+    </div>
+  )}
+</a>

@@ -1,0 +1,58 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ClickableCard from '../../components/ClickableCard.astro';
+import Callout from '../../components/Callout.astro';
+
+const connectors = [
+  { title: "Azure Active Directory", description: "Sign-in logs, audit logs, and provisioning logs from Azure AD.", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+  { title: "Microsoft 365", description: "Exchange, SharePoint, Teams, and OneDrive activity logs.", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>` },
+  { title: "Microsoft Defender XDR", description: "Alerts and incidents from Defender for Endpoint, Identity, and Cloud Apps.", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>` },
+  { title: "Windows Security Events", description: "Security events from Windows servers and workstations via AMA.", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>` },
+  { title: "AWS CloudTrail", description: "API activity and management events from Amazon Web Services.", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>` },
+  { title: "Syslog / CEF", description: "Linux syslog and Common Event Format from firewalls and appliances.", icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>` }
+];
+---
+
+<DocsLayout title="Data Connectors" tool="sentinel" lastUpdated="2025-01-06" updatedBy="Security Team">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-4">Data Connectors</h1>
+    <p class="text-xl text-gray-400 leading-relaxed">Configure data sources to stream security logs into Microsoft Sentinel.</p>
+  </div>
+  
+  <Callout type="info">Data connectors are managed in the Azure Portal under <strong>Microsoft Sentinel → Data connectors</strong>. Most connectors require specific Azure AD permissions to enable.</Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-6">Active Connectors</h2>
+  <p class="text-gray-300 mb-6">The following data connectors are currently configured in our Sentinel workspace:</p>
+  <ClickableCard cards={connectors} columns={3} />
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Connector Status</h2>
+  <div class="bg-sentinel-surface rounded-lg border border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-800/50">
+        <tr>
+          <th class="px-4 py-3 text-left text-gray-400 font-medium">Connector</th>
+          <th class="px-4 py-3 text-left text-gray-400 font-medium">Status</th>
+          <th class="px-4 py-3 text-left text-gray-400 font-medium">Last Log Received</th>
+          <th class="px-4 py-3 text-left text-gray-400 font-medium">Daily Volume</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-700">
+        <tr><td class="px-4 py-3 text-white">Azure Active Directory</td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400"></span>Connected</span></td><td class="px-4 py-3 text-gray-400 font-mono text-xs">2 min ago</td><td class="px-4 py-3 text-gray-400">~15 GB</td></tr>
+        <tr><td class="px-4 py-3 text-white">Microsoft 365</td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400"></span>Connected</span></td><td class="px-4 py-3 text-gray-400 font-mono text-xs">5 min ago</td><td class="px-4 py-3 text-gray-400">~8 GB</td></tr>
+        <tr><td class="px-4 py-3 text-white">Microsoft Defender XDR</td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400"></span>Connected</span></td><td class="px-4 py-3 text-gray-400 font-mono text-xs">1 min ago</td><td class="px-4 py-3 text-gray-400">~12 GB</td></tr>
+        <tr><td class="px-4 py-3 text-white">Windows Security Events</td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400"></span>Connected</span></td><td class="px-4 py-3 text-gray-400 font-mono text-xs">30 sec ago</td><td class="px-4 py-3 text-gray-400">~10 GB</td></tr>
+        <tr><td class="px-4 py-3 text-white">AWS CloudTrail</td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Degraded</span></td><td class="px-4 py-3 text-gray-400 font-mono text-xs">45 min ago</td><td class="px-4 py-3 text-gray-400">~3 GB</td></tr>
+        <tr><td class="px-4 py-3 text-white">Syslog / CEF</td><td class="px-4 py-3"><span class="inline-flex items-center gap-1.5 text-green-400"><span class="w-2 h-2 rounded-full bg-green-400"></span>Connected</span></td><td class="px-4 py-3 text-gray-400 font-mono text-xs">10 sec ago</td><td class="px-4 py-3 text-gray-400">~2 GB</td></tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <Callout type="warning" title="AWS CloudTrail Degraded">The AWS connector is currently experiencing delays. The Cloud team is investigating an IAM role permission issue. Ticket: <code>INC0012345</code></Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Verifying Data Ingestion</h2>
+  <p class="text-gray-300 mb-4">Use this KQL query to check if data is flowing from a specific table:</p>
+  <pre class="bg-[#1e1e24] border border-gray-700 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code class="text-gray-300">SigninLogs
+| where TimeGenerated > ago(1h)
+| summarize Count = count() by bin(TimeGenerated, 5m)
+| render timechart</code></pre>
+</DocsLayout>

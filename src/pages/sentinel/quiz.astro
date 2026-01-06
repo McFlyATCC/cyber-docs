@@ -1,0 +1,54 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Quiz from '../../components/Quiz.astro';
+import Callout from '../../components/Callout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const sentinelQuestions = [
+  { question: "What query language does Microsoft Sentinel use for log analysis?", options: ["SQL", "KQL (Kusto Query Language)", "PowerShell", "Python"], correct: 1, explanation: "Microsoft Sentinel uses Kusto Query Language (KQL), which is also used across Azure Monitor, Azure Data Explorer, and Microsoft Defender." },
+  { question: "Which KQL operator is used to filter rows based on a condition?", options: ["project", "summarize", "where", "extend"], correct: 2, explanation: "The 'where' operator filters rows based on a boolean condition. 'project' selects columns, 'summarize' aggregates data, and 'extend' adds calculated columns." },
+  { question: "What is the recommended first filter in any KQL query for performance?", options: ["where ResultType == 0", "project TimeGenerated", "where TimeGenerated > ago(24h)", "take 1000"], correct: 2, explanation: "Always filter by TimeGenerated first to limit the data scanned. This significantly improves query performance and reduces costs." },
+  { question: "Which table contains Azure AD sign-in events?", options: ["AuditLogs", "SigninLogs", "SecurityEvent", "AADLogs"], correct: 1, explanation: "SigninLogs contains Azure AD sign-in events including successful and failed authentication attempts. AuditLogs contains directory changes." },
+  { question: "What is a Sentinel Playbook built on?", options: ["Azure Functions", "Azure Logic Apps", "Power Automate", "Azure Automation"], correct: 1, explanation: "Sentinel Playbooks are Azure Logic Apps that can be triggered by analytics rules or run manually to automate incident response." },
+  { question: "Which ResultType value indicates a successful sign-in?", options: ["1", "0", "200", "Success"], correct: 1, explanation: "ResultType = 0 indicates a successful sign-in. Non-zero values indicate various failure reasons (e.g., 50126 = invalid password, 50053 = locked account)." },
+  { question: "What does 'summarize count() by UserPrincipalName' do?", options: ["Lists all users", "Counts total rows in the table", "Groups rows by user and counts each group", "Filters for users with high counts"], correct: 2, explanation: "The summarize operator with count() by UserPrincipalName groups all rows by the user field and returns the count for each unique user." },
+  { question: "How do you view the last 7 days of data in KQL?", options: ["where TimeGenerated > '7 days ago'", "where TimeGenerated > ago(7d)", "where TimeGenerated > datetime(7d)", "where Date > -7"], correct: 1, explanation: "The ago() function creates a relative time offset. ago(7d) means 7 days ago, ago(24h) means 24 hours ago, ago(30m) means 30 minutes ago." }
+];
+---
+
+<DocsLayout title="Knowledge Check" tool="sentinel" lastUpdated="2025-01-06" updatedBy="Security Team">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-4">Knowledge Check</h1>
+    <p class="text-xl text-gray-400 leading-relaxed">Test your understanding of Microsoft Sentinel concepts and KQL queries.</p>
+  </div>
+  
+  <Callout type="info">This quiz covers topics from the Getting Started, KQL Queries, and Playbooks sections. Take your time and review the explanations to reinforce your learning.</Callout>
+  
+  <Quiz questions={sentinelQuestions} title="Microsoft Sentinel Fundamentals" />
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Additional Practice</h2>
+  <p class="text-gray-300 mb-6">Ready for more? Try these hands-on exercises:</p>
+  
+  <div class="space-y-4">
+    <div class="bg-sentinel-surface rounded-lg border border-gray-700 p-5">
+      <h3 class="font-display font-semibold text-white mb-2">Exercise 1: Failed Login Analysis</h3>
+      <p class="text-gray-400 text-sm mb-3">Write a KQL query to find users with more than 10 failed sign-in attempts in the last 24 hours.</p>
+      <a href={`${base}sentinel/kql-queries/`} class="text-sentinel-blue text-sm hover:underline">Practice in the KQL Console →</a>
+    </div>
+    
+    <div class="bg-sentinel-surface rounded-lg border border-gray-700 p-5">
+      <h3 class="font-display font-semibold text-white mb-2">Exercise 2: Incident Triage</h3>
+      <p class="text-gray-400 text-sm mb-3">Open a test incident in the Sentinel dev workspace and run the Enrich-Incident-TI playbook.</p>
+      <a href={`${base}sentinel/playbooks/`} class="text-sentinel-blue text-sm hover:underline">Review Playbook Documentation →</a>
+    </div>
+  </div>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Certification Resources</h2>
+  <div class="flex flex-wrap gap-3">
+    <a href="https://learn.microsoft.com/en-us/certifications/exams/sc-200" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-sentinel-surface border border-gray-700 rounded-lg text-sm text-gray-300 hover:border-sentinel-blue/50 hover:text-white transition-colors">
+      SC-200 Exam Guide
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+    </a>
+  </div>
+</DocsLayout>

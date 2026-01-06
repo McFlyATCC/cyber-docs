@@ -1,0 +1,89 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ClickableCard from '../../components/ClickableCard.astro';
+import Callout from '../../components/Callout.astro';
+import SimulatedCLI from '../../components/SimulatedCLI.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const setupSteps = [
+  { title: "Request Access", description: "Submit a ServiceNow ticket to get Sentinel Contributor access in Azure.", step: 1 },
+  { title: "Install Az Module", description: "Install the Azure PowerShell module on your workstation.", step: 2 },
+  { title: "Connect to Azure", description: "Authenticate using your enterprise credentials via az login.", step: 3 },
+  { title: "Verify Access", description: "Confirm you can view the Sentinel workspace and incidents.", step: 4 }
+];
+
+const cliCommands = [
+  { input: "az login", output: "A web browser has been opened at https://login.microsoftonline.com/...\nYou have logged in. Now let us find all the subscriptions to which you have access...\n[\n  {\n    \"cloudName\": \"AzureCloud\",\n    \"id\": \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"isDefault\": true,\n    \"name\": \"Security-Production\",\n    \"state\": \"Enabled\",\n    \"tenantId\": \"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\"\n  }\n]" },
+  { input: "az account set --subscription Security-Production", output: "" },
+  { input: "az monitor log-analytics workspace list -g rg-security-prod -o table", output: "Name                      ResourceGroup      Location    Sku\n------------------------  -----------------  ----------  ---------\nsentinel-prod-workspace   rg-security-prod   eastus2     PerGB2018" },
+  { input: "az sentinel incident list --workspace-name sentinel-prod-workspace -g rg-security-prod --top 5 -o table", output: "Title                           Severity    Status    IncidentNumber\n------------------------------  ----------  --------  ----------------\nSuspicious sign-in activity     High        New       1542\nMalware detected on endpoint    Medium      Active    1541\nImpossible travel alert         Medium      New       1540\nBrute force attempt detected    Low         Closed    1539\nAnonymous IP login              Low         New       1538" }
+];
+---
+
+<DocsLayout title="Getting Started" tool="sentinel" lastUpdated="2025-01-06" updatedBy="Security Team">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-4">Getting Started</h1>
+    <p class="text-xl text-gray-400 leading-relaxed">Set up your environment and get access to Microsoft Sentinel.</p>
+  </div>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-8 mb-6">Prerequisites</h2>
+  <p class="text-gray-300 mb-4">Before you begin, ensure you have:</p>
+  <ul class="space-y-2 text-gray-300 mb-8">
+    <li class="flex items-start gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue mt-0.5 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+      A corporate laptop with admin privileges
+    </li>
+    <li class="flex items-start gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue mt-0.5 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+      VPN connection to corporate network
+    </li>
+    <li class="flex items-start gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue mt-0.5 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+      Azure Active Directory account (your corporate email)
+    </li>
+    <li class="flex items-start gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue mt-0.5 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+      PowerShell 7.x or Windows Terminal
+    </li>
+  </ul>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-6">Setup Process</h2>
+  <ClickableCard cards={setupSteps} columns={4} />
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Step 1: Request Access</h2>
+  <p class="text-gray-300 mb-4">Submit a ServiceNow request for <strong class="text-white">Microsoft Sentinel Contributor</strong> access. Include your manager's approval and business justification.</p>
+  <Callout type="info">Access requests typically take 1-2 business days. You'll receive an email confirmation once your access is provisioned.</Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Step 2: Install Azure CLI</h2>
+  <p class="text-gray-300 mb-4">Install the Azure CLI using PowerShell:</p>
+  <pre class="bg-[#1e1e24] border border-gray-700 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code class="text-gray-300"># Install Azure CLI via winget
+winget install Microsoft.AzureCLI</code></pre>
+  <Callout type="tip">After installation, restart your terminal for the <code>az</code> command to be available in your PATH.</Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Step 3: Connect to Azure</h2>
+  <p class="text-gray-300 mb-4">Try the commands below in our simulated CLI to familiarize yourself with the workflow:</p>
+  <SimulatedCLI commands={cliCommands} title="Azure CLI" prompt="PS C:\>" />
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Step 4: Verify Access</h2>
+  <p class="text-gray-300 mb-4">Once connected, verify you can access the Sentinel workspace by:</p>
+  <ol class="list-decimal list-inside space-y-2 text-gray-300 mb-6">
+    <li>Navigate to the <a href="https://portal.azure.com" class="text-sentinel-blue hover:underline">Azure Portal</a></li>
+    <li>Search for "Microsoft Sentinel" in the top search bar</li>
+    <li>Select the <code class="bg-gray-800 px-1.5 py-0.5 rounded text-sm">sentinel-prod-workspace</code> workspace</li>
+    <li>Confirm you can see the Overview dashboard with incident counts</li>
+  </ol>
+  <Callout type="warning">If you see "You don't have access" errors, verify your ServiceNow request was approved and wait 15 minutes for Azure AD sync.</Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Next Steps</h2>
+  <div class="flex flex-wrap gap-3">
+    <a href={`${base}sentinel/data-connectors/`} class="inline-flex items-center gap-2 px-4 py-2 bg-sentinel-surface border border-gray-700 rounded-lg text-sm text-gray-300 hover:border-sentinel-blue/50 hover:text-white transition-colors">
+      Configure Data Connectors
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+    <a href={`${base}sentinel/kql-queries/`} class="inline-flex items-center gap-2 px-4 py-2 bg-sentinel-surface border border-gray-700 rounded-lg text-sm text-gray-300 hover:border-sentinel-blue/50 hover:text-white transition-colors">
+      Learn KQL Queries
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+  </div>
+</DocsLayout>

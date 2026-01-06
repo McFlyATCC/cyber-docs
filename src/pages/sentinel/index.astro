@@ -1,0 +1,132 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ClickableCard from '../../components/ClickableCard.astro';
+import Callout from '../../components/Callout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const quickLinks = [
+  {
+    title: "Getting Started",
+    description: "Set up your Sentinel workspace and connect your first data sources.",
+    href: `${base}sentinel/getting-started/`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`
+  },
+  {
+    title: "Data Connectors",
+    description: "Configure connectors for Azure AD, Office 365, AWS, and more.",
+    href: `${base}sentinel/data-connectors/`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><path d="M12 5v14"/><path d="M18 13V5a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v8"/><path d="M6 15v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4"/></svg>`
+  },
+  {
+    title: "KQL Queries",
+    description: "Learn Kusto Query Language with hands-on examples and our simulated CLI.",
+    href: `${base}sentinel/kql-queries/`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`
+  },
+  {
+    title: "Playbooks",
+    description: "Automate incident response with Logic Apps and automated workflows.",
+    href: `${base}sentinel/playbooks/`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>`
+  },
+  {
+    title: "Knowledge Check",
+    description: "Test your understanding with interactive quizzes.",
+    href: `${base}sentinel/quiz/`,
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`
+  }
+];
+---
+
+<DocsLayout title="Microsoft Sentinel" tool="sentinel" lastUpdated="2025-01-06" updatedBy="Security Team">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-4">Microsoft Sentinel</h1>
+    <p class="text-xl text-gray-400 leading-relaxed">
+      Cloud-native SIEM and SOAR solution for intelligent security analytics across your enterprise.
+    </p>
+  </div>
+  
+  <Callout type="info" title="What is Microsoft Sentinel?">
+    Microsoft Sentinel is a scalable, cloud-native security information and event management (SIEM) 
+    and security orchestration, automation, and response (SOAR) solution. It delivers intelligent 
+    security analytics and threat intelligence across the enterprise.
+  </Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-6">Quick Links</h2>
+  
+  <ClickableCard cards={quickLinks} columns={3} />
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-6">Key Capabilities</h2>
+  
+  <div class="space-y-4 text-gray-300">
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 rounded bg-sentinel-blue/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <strong class="text-white">Collect</strong> — Aggregate security data across your entire organization from users, devices, applications, and infrastructure, both on-premises and in multiple clouds.
+      </div>
+    </div>
+    
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 rounded bg-sentinel-blue/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <strong class="text-white">Detect</strong> — Identify previously undetected threats and minimize false positives using Microsoft's analytics and threat intelligence.
+      </div>
+    </div>
+    
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 rounded bg-sentinel-blue/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <strong class="text-white">Investigate</strong> — Hunt for suspicious activities at scale with AI-powered investigation tools and years of Microsoft's cyber security expertise.
+      </div>
+    </div>
+    
+    <div class="flex items-start gap-3">
+      <div class="w-6 h-6 rounded bg-sentinel-blue/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div>
+        <strong class="text-white">Respond</strong> — Respond to incidents rapidly with built-in orchestration and automation of common tasks.
+      </div>
+    </div>
+  </div>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-6">Our Environment</h2>
+  
+  <div class="bg-sentinel-surface rounded-lg border border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+      <tbody class="divide-y divide-gray-700">
+        <tr>
+          <td class="px-4 py-3 text-gray-400 font-medium w-1/3">Workspace Name</td>
+          <td class="px-4 py-3 text-white font-mono">sentinel-prod-workspace</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-gray-400 font-medium">Resource Group</td>
+          <td class="px-4 py-3 text-white font-mono">rg-security-prod</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-gray-400 font-medium">Region</td>
+          <td class="px-4 py-3 text-white">East US 2</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-gray-400 font-medium">Retention Period</td>
+          <td class="px-4 py-3 text-white">90 days (interactive), 2 years (archive)</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 text-gray-400 font-medium">Daily Ingestion</td>
+          <td class="px-4 py-3 text-white">~50 GB/day</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <Callout type="tip">
+    Bookmark the <a href="https://portal.azure.com/#blade/Microsoft_Azure_Security_Insights/MainMenuBlade" target="_blank" class="text-sentinel-blue hover:underline">Azure Portal Sentinel dashboard</a> for quick access to incidents, workbooks, and hunting queries.
+  </Callout>
+</DocsLayout>

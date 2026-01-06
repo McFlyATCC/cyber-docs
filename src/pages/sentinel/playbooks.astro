@@ -1,0 +1,89 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import ClickableCard from '../../components/ClickableCard.astro';
+import Callout from '../../components/Callout.astro';
+
+const playbooks = [
+  { title: "Block-IP-Address", description: "Automatically blocks malicious IPs in Azure Firewall when high-severity alerts trigger.", step: 1 },
+  { title: "Disable-User-Account", description: "Disables compromised Azure AD accounts and revokes all active sessions.", step: 2 },
+  { title: "Enrich-Incident-TI", description: "Enriches incidents with threat intelligence from VirusTotal and AbuseIPDB.", step: 3 },
+  { title: "Send-Teams-Alert", description: "Posts high-severity incident summaries to the SOC Teams channel.", step: 4 },
+  { title: "Isolate-Endpoint", description: "Triggers Defender for Endpoint isolation for compromised devices.", step: 5 },
+  { title: "Create-ServiceNow-Ticket", description: "Automatically creates ServiceNow incidents for Sentinel alerts.", step: 6 }
+];
+---
+
+<DocsLayout title="Playbooks" tool="sentinel" lastUpdated="2025-01-06" updatedBy="Security Team">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-4">Playbooks</h1>
+    <p class="text-xl text-gray-400 leading-relaxed">Automate incident response with Azure Logic Apps integrated into Microsoft Sentinel.</p>
+  </div>
+  
+  <Callout type="info">Playbooks are Azure Logic Apps that can be triggered manually or automatically by Sentinel analytics rules. They enable SOAR (Security Orchestration, Automation, and Response) capabilities.</Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-6">Active Playbooks</h2>
+  <p class="text-gray-300 mb-6">These playbooks are deployed in our environment and available for incident response:</p>
+  <ClickableCard cards={playbooks} columns={3} />
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Playbook Details</h2>
+  
+  <div class="space-y-6">
+    <div class="bg-sentinel-surface rounded-lg border border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded bg-red-500/20 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
+          </div>
+          <h3 class="font-display font-semibold text-white">Block-IP-Address</h3>
+        </div>
+        <span class="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400">Auto-trigger</span>
+      </div>
+      <div class="p-6">
+        <p class="text-gray-300 text-sm mb-4">When a high-severity alert contains a malicious IP address, this playbook automatically:</p>
+        <ol class="list-decimal list-inside space-y-2 text-gray-400 text-sm mb-4">
+          <li>Extracts IP entities from the incident</li>
+          <li>Checks the IP against our allow-list</li>
+          <li>Adds a deny rule to Azure Firewall</li>
+          <li>Updates the incident with actions taken</li>
+          <li>Notifies the SOC team via Teams</li>
+        </ol>
+        <div class="flex items-center gap-4 text-xs text-gray-500">
+          <span>Trigger: <code class="bg-gray-800 px-1.5 py-0.5 rounded">High severity alerts with IP entities</code></span>
+          <span>Runs: ~15/day</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-sentinel-surface rounded-lg border border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded bg-amber-500/20 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/></svg>
+          </div>
+          <h3 class="font-display font-semibold text-white">Disable-User-Account</h3>
+        </div>
+        <span class="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-400">Manual</span>
+      </div>
+      <div class="p-6">
+        <p class="text-gray-300 text-sm mb-4">Manually triggered to disable a compromised user account:</p>
+        <ol class="list-decimal list-inside space-y-2 text-gray-400 text-sm mb-4">
+          <li>Disables the Azure AD account</li>
+          <li>Revokes all refresh tokens (forces re-auth)</li>
+          <li>Removes from all security groups</li>
+          <li>Creates an audit log entry</li>
+          <li>Emails the user's manager</li>
+        </ol>
+        <Callout type="warning">This is a high-impact action. Only SOC Tier 2+ analysts should execute this playbook.</Callout>
+      </div>
+    </div>
+  </div>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Running a Playbook Manually</h2>
+  <ol class="list-decimal list-inside space-y-3 text-gray-300 mb-6">
+    <li>Open the incident in Microsoft Sentinel</li>
+    <li>Click <strong class="text-white">Actions</strong> in the top menu</li>
+    <li>Select <strong class="text-white">Run playbook</strong></li>
+    <li>Choose the playbook from the list</li>
+    <li>Click <strong class="text-white">Run</strong> and monitor the Logic App run history</li>
+  </ol>
+</DocsLayout>

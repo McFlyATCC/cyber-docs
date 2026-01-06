@@ -1,0 +1,146 @@
+---
+interface Command {
+  input: string;
+  output: string;
+}
+
+interface Props {
+  title?: string;
+  commands: Command[];
+  prompt?: string;
+}
+
+const { title = "Azure Cloud Shell", commands, prompt = "PS Azure:\\>" } = Astro.props;
+const commandsJson = JSON.stringify(commands);
+const uniqueId = `cli-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="cli-simulator rounded-lg overflow-hidden border border-gray-700 my-6" data-cli-id={uniqueId}>
+  <!-- Title bar -->
+  <div class="bg-gray-800 px-4 py-2 flex items-center justify-between border-b border-gray-700">
+    <div class="flex items-center gap-2">
+      <div class="flex gap-1.5">
+        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+      </div>
+      <span class="text-sm text-gray-400 ml-2 font-mono">{title}</span>
+    </div>
+    <button 
+      class="cli-reset text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1 rounded hover:bg-gray-700"
+      data-target={uniqueId}
+    >
+      Reset
+    </button>
+  </div>
+  
+  <!-- Terminal body -->
+  <div class="bg-[#0c0c0c] p-4 font-mono text-sm min-h-[200px] max-h-[400px] overflow-y-auto">
+    <div class="cli-output space-y-2" data-output={uniqueId}>
+      <div class="text-gray-500 text-xs mb-4">
+        Type a command or click a suggestion below. Try: <span class="text-sentinel-blue">help</span>
+      </div>
+    </div>
+    
+    <!-- Input line -->
+    <div class="flex items-center gap-2 mt-2">
+      <span class="text-sentinel-blue-light">{prompt}</span>
+      <input 
+        type="text" 
+        class="cli-input flex-1 bg-transparent outline-none text-green-400 caret-green-400"
+        placeholder="Enter command..."
+        autocomplete="off"
+        spellcheck="false"
+        data-input={uniqueId}
+      />
+    </div>
+  </div>
+  
+  <!-- Command suggestions -->
+  <div class="bg-gray-900 px-4 py-3 border-t border-gray-800">
+    <div class="text-xs text-gray-500 mb-2">Available commands:</div>
+    <div class="flex flex-wrap gap-2 cli-suggestions" data-suggestions={uniqueId}>
+      {commands.map(cmd => (
+        <button 
+          class="cli-suggestion text-xs px-2 py-1 rounded bg-gray-800 text-gray-400 hover:bg-sentinel-blue/20 hover:text-sentinel-blue transition-colors font-mono"
+          data-command={cmd.input}
+          data-target={uniqueId}
+        >
+          {cmd.input}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ commandsJson, uniqueId, prompt }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const commands = JSON.parse(commandsJson);
+    const commandMap = new Map(commands.map(c => [c.input.toLowerCase(), c.output]));
+    
+    // Add help command
+    commandMap.set('help', commands.map(c => `  ${c.input}`).join('\n'));
+    commandMap.set('clear', '__CLEAR__');
+    
+    const input = document.querySelector(`[data-input="${uniqueId}"]`);
+    const output = document.querySelector(`[data-output="${uniqueId}"]`);
+    const suggestions = document.querySelectorAll(`[data-target="${uniqueId}"].cli-suggestion`);
+    const resetBtn = document.querySelector(`[data-target="${uniqueId}"].cli-reset`);
+    
+    function addOutput(command, result, isError = false) {
+      const cmdLine = document.createElement('div');
+      cmdLine.innerHTML = `<span class="text-sentinel-blue-light">${prompt}</span> <span class="text-green-400">${command}</span>`;
+      output.appendChild(cmdLine);
+      
+      const resultLine = document.createElement('div');
+      resultLine.className = isError ? 'text-red-400 whitespace-pre-wrap' : 'text-gray-300 whitespace-pre-wrap';
+      resultLine.textContent = result;
+      output.appendChild(resultLine);
+      
+      // Add spacing
+      const spacer = document.createElement('div');
+      spacer.className = 'h-2';
+      output.appendChild(spacer);
+      
+      // Scroll to bottom
+      output.parentElement.scrollTop = output.parentElement.scrollHeight;
+    }
+    
+    function executeCommand(cmd) {
+      const trimmed = cmd.trim();
+      if (!trimmed) return;
+      
+      const result = commandMap.get(trimmed.toLowerCase());
+      
+      if (result === '__CLEAR__') {
+        output.innerHTML = '<div class="text-gray-500 text-xs mb-4">Terminal cleared.</div>';
+      } else if (result) {
+        addOutput(trimmed, result);
+      } else {
+        addOutput(trimmed, `'${trimmed}' is not recognized as a valid command. Type 'help' for available commands.`, true);
+      }
+      
+      input.value = '';
+    }
+    
+    // Handle input
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        executeCommand(input.value);
+      }
+    });
+    
+    // Handle suggestion clicks
+    suggestions.forEach(btn => {
+      btn.addEventListener('click', () => {
+        executeCommand(btn.dataset.command);
+      });
+    });
+    
+    // Handle reset
+    resetBtn.addEventListener('click', () => {
+      output.innerHTML = '<div class="text-gray-500 text-xs mb-4">Type a command or click a suggestion below. Try: <span class="text-sentinel-blue">help</span></div>';
+      input.value = '';
+    });
+  });
+</script>

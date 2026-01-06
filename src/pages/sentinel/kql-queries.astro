@@ -1,0 +1,84 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Callout from '../../components/Callout.astro';
+import SimulatedCLI from '../../components/SimulatedCLI.astro';
+
+const kqlCommands = [
+  { input: "SigninLogs | take 10", output: "TimeGenerated            UserPrincipalName              ResultType  IPAddress\n-----------------------  -----------------------------  ----------  ---------------\n2025-01-03T10:15:23Z     john.doe@company.com           0           192.168.1.100\n2025-01-03T10:14:55Z     jane.smith@company.com         0           10.0.0.50\n2025-01-03T10:14:32Z     bob.wilson@company.com         50126       203.0.113.42\n... (7 more rows)" },
+  { input: "SigninLogs | where ResultType != 0 | take 5", output: "TimeGenerated            UserPrincipalName              ResultType  ResultDescription\n-----------------------  -----------------------------  ----------  ---------------------------\n2025-01-03T10:14:32Z     bob.wilson@company.com         50126       Invalid username or password\n2025-01-03T09:45:12Z     eve.hacker@company.com         50053       Account is locked\n2025-01-03T09:22:01Z     test.user@company.com          50057       User account is disabled" },
+  { input: "SigninLogs | summarize count() by ResultType", output: "ResultType    count_\n----------    ------\n0             15423\n50126         342\n50053         28\n50057         12" },
+  { input: "SigninLogs | where TimeGenerated > ago(24h) | summarize FailedAttempts = countif(ResultType != 0) by UserPrincipalName | where FailedAttempts > 5 | order by FailedAttempts desc", output: "UserPrincipalName              FailedAttempts\n-----------------------------  --------------\nbob.wilson@company.com         47\neve.hacker@company.com         23\ntest.user@company.com          12" },
+  { input: "SecurityAlert | where TimeGenerated > ago(7d) | summarize count() by AlertName | top 5 by count_", output: "AlertName                                    count_\n-----------------------------------------    ------\nSuspicious sign-in activity                  156\nImpossible travel activity                   89\nAnonymous IP address                         67\nMalware detected                             45" }
+];
+---
+
+<DocsLayout title="KQL Queries" tool="sentinel" lastUpdated="2025-01-06" updatedBy="Security Team">
+  <div class="mb-8">
+    <h1 class="font-display text-4xl font-bold text-white mb-4">KQL Queries</h1>
+    <p class="text-xl text-gray-400 leading-relaxed">Learn Kusto Query Language (KQL) to hunt threats and analyze security data in Sentinel.</p>
+  </div>
+  
+  <Callout type="info">KQL is the query language used across Azure Monitor, Microsoft Sentinel, and Microsoft Defender. Mastering KQL is essential for effective threat hunting and incident investigation.</Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Try It: Interactive KQL Console</h2>
+  <p class="text-gray-300 mb-4">Practice KQL queries in our simulated environment. Click a command or type your own:</p>
+  <SimulatedCLI commands={kqlCommands} title="Log Analytics - sentinel-prod-workspace" prompt="KQL>" />
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">KQL Fundamentals</h2>
+  <h3 class="font-display text-lg font-semibold text-white mt-8 mb-3">Basic Structure</h3>
+  <p class="text-gray-300 mb-4">KQL queries start with a table name and use pipe (<code>|</code>) operators to chain commands:</p>
+  <pre class="bg-[#1e1e24] border border-gray-700 rounded-lg p-4 text-sm overflow-x-auto mb-6"><code class="text-gray-300">TableName
+| where Condition
+| project Column1, Column2
+| order by Column1 desc
+| take 100</code></pre>
+  
+  <h3 class="font-display text-lg font-semibold text-white mt-8 mb-3">Essential Operators</h3>
+  <div class="bg-sentinel-surface rounded-lg border border-gray-700 overflow-hidden mb-6">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-800/50"><tr><th class="px-4 py-3 text-left text-gray-400 font-medium">Operator</th><th class="px-4 py-3 text-left text-gray-400 font-medium">Description</th><th class="px-4 py-3 text-left text-gray-400 font-medium">Example</th></tr></thead>
+      <tbody class="divide-y divide-gray-700">
+        <tr><td class="px-4 py-3 text-sentinel-blue font-mono">where</td><td class="px-4 py-3 text-gray-300">Filter rows based on condition</td><td class="px-4 py-3 text-gray-400 font-mono text-xs">| where ResultType != 0</td></tr>
+        <tr><td class="px-4 py-3 text-sentinel-blue font-mono">project</td><td class="px-4 py-3 text-gray-300">Select specific columns</td><td class="px-4 py-3 text-gray-400 font-mono text-xs">| project TimeGenerated, User</td></tr>
+        <tr><td class="px-4 py-3 text-sentinel-blue font-mono">summarize</td><td class="px-4 py-3 text-gray-300">Aggregate data</td><td class="px-4 py-3 text-gray-400 font-mono text-xs">| summarize count() by User</td></tr>
+        <tr><td class="px-4 py-3 text-sentinel-blue font-mono">extend</td><td class="px-4 py-3 text-gray-300">Add calculated columns</td><td class="px-4 py-3 text-gray-400 font-mono text-xs">| extend Hour = bin(TimeGenerated, 1h)</td></tr>
+        <tr><td class="px-4 py-3 text-sentinel-blue font-mono">join</td><td class="px-4 py-3 text-gray-300">Combine tables</td><td class="px-4 py-3 text-gray-400 font-mono text-xs">| join kind=inner (Table2) on Key</td></tr>
+        <tr><td class="px-4 py-3 text-sentinel-blue font-mono">order by</td><td class="px-4 py-3 text-gray-300">Sort results</td><td class="px-4 py-3 text-gray-400 font-mono text-xs">| order by Count desc</td></tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Common Security Queries</h2>
+  
+  <h3 class="font-display text-lg font-semibold text-white mt-8 mb-3">Failed Sign-ins by User</h3>
+  <pre class="bg-[#1e1e24] border border-gray-700 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code class="text-gray-300">SigninLogs
+| where TimeGenerated > ago(24h)
+| where ResultType != 0
+| summarize 
+    FailedAttempts = count(),
+    DistinctIPs = dcount(IPAddress)
+    by UserPrincipalName
+| where FailedAttempts > 5
+| order by FailedAttempts desc</code></pre>
+  
+  <h3 class="font-display text-lg font-semibold text-white mt-8 mb-3">High-Severity Alerts Timeline</h3>
+  <pre class="bg-[#1e1e24] border border-gray-700 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code class="text-gray-300">SecurityAlert
+| where TimeGenerated > ago(7d)
+| where AlertSeverity == "High"
+| summarize AlertCount = count() by bin(TimeGenerated, 1h), AlertName
+| render timechart</code></pre>
+  
+  <Callout type="tip" title="Performance Tip">Always filter by <code>TimeGenerated</code> first to limit the data scanned. Use <code>ago()</code> for relative time ranges instead of hardcoded dates.</Callout>
+  
+  <h2 class="font-display text-2xl font-semibold text-white mt-12 mb-4">Key Tables Reference</h2>
+  <div class="grid md:grid-cols-2 gap-4 mb-8">
+    <div class="bg-sentinel-surface rounded-lg border border-gray-700 p-4">
+      <h4 class="font-display font-semibold text-white mb-2">Identity & Access</h4>
+      <ul class="text-sm text-gray-400 space-y-1 font-mono"><li>SigninLogs</li><li>AADNonInteractiveUserSignInLogs</li><li>AuditLogs</li><li>IdentityInfo</li></ul>
+    </div>
+    <div class="bg-sentinel-surface rounded-lg border border-gray-700 p-4">
+      <h4 class="font-display font-semibold text-white mb-2">Security Alerts</h4>
+      <ul class="text-sm text-gray-400 space-y-1 font-mono"><li>SecurityAlert</li><li>SecurityIncident</li><li>SecurityEvent</li><li>ThreatIntelligenceIndicator</li></ul>
+    </div>
+  </div>
+</DocsLayout>

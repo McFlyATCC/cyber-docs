@@ -1,0 +1,176 @@
+---
+interface Question {
+  question: string;
+  options: string[];
+  correct: number;
+  explanation: string;
+}
+
+interface Props {
+  title?: string;
+  questions: Question[];
+}
+
+const { title = "Knowledge Check", questions } = Astro.props;
+const questionsJson = JSON.stringify(questions);
+const uniqueId = `quiz-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="quiz-container my-8" data-quiz-id={uniqueId}>
+  <!-- Header -->
+  <div class="bg-sentinel-surface rounded-t-lg px-6 py-4 border border-gray-700 border-b-0">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-sentinel-blue/10 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sentinel-blue">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <path d="M12 17h.01"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-display font-semibold text-white">{title}</h3>
+          <p class="text-sm text-gray-500">{questions.length} questions</p>
+        </div>
+      </div>
+      <div class="quiz-score text-sm text-gray-400" data-score={uniqueId}>
+        Score: <span class="score-value font-mono text-sentinel-blue">0</span>/<span class="score-total">{questions.length}</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Questions -->
+  <div class="bg-sentinel-dark border border-gray-700 border-t-0 rounded-b-lg divide-y divide-gray-800">
+    {questions.map((q, index) => (
+      <div class="quiz-question p-6" data-question={uniqueId} data-index={index}>
+        <div class="flex gap-4">
+          <div class="quiz-number flex-shrink-0 w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-sm font-medium text-gray-400">
+            {index + 1}
+          </div>
+          <div class="flex-1">
+            <p class="text-white font-medium mb-4">{q.question}</p>
+            
+            <div class="space-y-2 quiz-options" data-options={`${uniqueId}-${index}`}>
+              {q.options.map((option, optIndex) => (
+                <button 
+                  class="quiz-option w-full text-left px-4 py-3 rounded-lg border border-gray-700 text-gray-300 hover:border-sentinel-blue/50 hover:bg-sentinel-blue/5 transition-all text-sm"
+                  data-quiz={uniqueId}
+                  data-question-index={index}
+                  data-option-index={optIndex}
+                  data-correct={optIndex === q.correct ? 'true' : 'false'}
+                >
+                  <span class="option-letter font-mono text-gray-500 mr-3">{String.fromCharCode(65 + optIndex)}.</span>
+                  {option}
+                </button>
+              ))}
+            </div>
+            
+            <div class="quiz-explanation hidden mt-4 p-4 rounded-lg text-sm" data-explanation={`${uniqueId}-${index}`}>
+              <p class="explanation-text"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+  
+  <!-- Reset button -->
+  <div class="mt-4 flex justify-end">
+    <button 
+      class="quiz-reset text-sm text-gray-500 hover:text-gray-300 transition-colors px-4 py-2 rounded-lg hover:bg-gray-800"
+      data-reset={uniqueId}
+    >
+      Reset Quiz
+    </button>
+  </div>
+</div>
+
+<script define:vars={{ questionsJson, uniqueId }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const questions = JSON.parse(questionsJson);
+    let score = 0;
+    let answered = new Set();
+    
+    const scoreDisplay = document.querySelector(`[data-score="${uniqueId}"] .score-value`);
+    const options = document.querySelectorAll(`[data-quiz="${uniqueId}"]`);
+    const resetBtn = document.querySelector(`[data-reset="${uniqueId}"]`);
+    
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        const questionIndex = parseInt(option.dataset.questionIndex);
+        const optionIndex = parseInt(option.dataset.optionIndex);
+        const isCorrect = option.dataset.correct === 'true';
+        
+        // Don't allow re-answering
+        if (answered.has(questionIndex)) return;
+        answered.add(questionIndex);
+        
+        // Get all options for this question
+        const questionOptions = document.querySelectorAll(`[data-quiz="${uniqueId}"][data-question-index="${questionIndex}"]`);
+        
+        // Disable all options and show correct/incorrect
+        questionOptions.forEach(opt => {
+          opt.disabled = true;
+          opt.classList.remove('hover:border-sentinel-blue/50', 'hover:bg-sentinel-blue/5');
+          
+          if (opt.dataset.correct === 'true') {
+            opt.classList.add('border-green-500/50', 'bg-green-500/10', 'text-green-400');
+          } else if (opt === option && !isCorrect) {
+            opt.classList.add('border-red-500/50', 'bg-red-500/10', 'text-red-400');
+          } else {
+            opt.classList.add('opacity-50');
+          }
+        });
+        
+        // Update score
+        if (isCorrect) {
+          score++;
+          scoreDisplay.textContent = score;
+        }
+        
+        // Show explanation
+        const explanation = document.querySelector(`[data-explanation="${uniqueId}-${questionIndex}"]`);
+        const explanationText = explanation.querySelector('.explanation-text');
+        explanationText.textContent = questions[questionIndex].explanation;
+        explanation.classList.remove('hidden');
+        explanation.classList.add(isCorrect ? 'bg-green-500/10' : 'bg-amber-500/10');
+        explanationText.classList.add(isCorrect ? 'text-green-400' : 'text-amber-400');
+        
+        // Update question number indicator
+        const questionNumber = document.querySelector(`[data-question="${uniqueId}"][data-index="${questionIndex}"] .quiz-number`);
+        questionNumber.classList.remove('bg-gray-800', 'text-gray-400');
+        questionNumber.classList.add(isCorrect ? 'bg-green-500/20' : 'bg-red-500/20', isCorrect ? 'text-green-400' : 'text-red-400');
+      });
+    });
+    
+    // Reset quiz
+    resetBtn.addEventListener('click', () => {
+      score = 0;
+      answered.clear();
+      scoreDisplay.textContent = '0';
+      
+      options.forEach(opt => {
+        opt.disabled = false;
+        opt.classList.remove(
+          'border-green-500/50', 'bg-green-500/10', 'text-green-400',
+          'border-red-500/50', 'bg-red-500/10', 'text-red-400',
+          'opacity-50'
+        );
+        opt.classList.add('hover:border-sentinel-blue/50', 'hover:bg-sentinel-blue/5');
+      });
+      
+      // Hide explanations
+      document.querySelectorAll(`[data-explanation^="${uniqueId}"]`).forEach(exp => {
+        exp.classList.add('hidden');
+        exp.classList.remove('bg-green-500/10', 'bg-amber-500/10');
+        exp.querySelector('.explanation-text').classList.remove('text-green-400', 'text-amber-400');
+      });
+      
+      // Reset question numbers
+      document.querySelectorAll(`[data-question="${uniqueId}"] .quiz-number`).forEach(num => {
+        num.classList.remove('bg-green-500/20', 'bg-red-500/20', 'text-green-400', 'text-red-400');
+        num.classList.add('bg-gray-800', 'text-gray-400');
+      });
+    });
+  });
+</script>
